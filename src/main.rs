@@ -71,21 +71,21 @@ mod tests {
       "handler": "/api/v1/series",
       "instance": "localhost:9090",
       "job": "prometheus",
-      "le": "0.1"
+      "le": "1"
     },
     {
       "__name__": "prometheus_http_request_duration_seconds_bucket",
       "handler": "/api/v1/series",
       "instance": "localhost:9090",
       "job": "prometheus",
-      "le": "0.2"
+      "le": "2"
     },
     {
       "__name__": "prometheus_http_request_duration_seconds_bucket",
       "handler": "/api/v1/series",
       "instance": "localhost:9090",
       "job": "prometheus",
-      "le": "0.3"
+      "le": "3"
     }
   ]
 }
@@ -99,28 +99,28 @@ mod tests {
       "handler": "/api/v1/series",
       "instance": "localhost:9090",
       "job": "prometheus",
-      "le": "0.2"
+      "le": "2.0"
     },
     {
       "__name__": "prometheus_http_request_duration_seconds_bucket",
       "handler": "/api/v1/series",
       "instance": "localhost:9090",
       "job": "prometheus",
-      "le": "0.3"
+      "le": "3.0"
     },
     {
       "__name__": "prometheus_http_request_duration_seconds_bucket",
       "handler": "/api/v1/series",
       "instance": "localhost:9090",
       "job": "prometheus",
-      "le": "0.4"
+      "le": "4.0"
     },
     {
       "__name__": "prometheus_http_request_duration_seconds_bucket",
       "handler": "/api/v1/series",
       "instance": "localhost:9090",
       "job": "prometheus",
-      "le": "0.5"
+      "le": "5.0"
     }
   ]
 }"#;
@@ -135,16 +135,16 @@ mod tests {
         let mut it = d1.iter();
         let s = it.next().unwrap();
         let le = s.labels.get("le").unwrap();
-        assert_eq!(le, "0.1");
+        assert_eq!(le, "1.0");
 
         let mut it = d2.iter();
         let s = it.next().unwrap();
         let le = s.labels.get("le").unwrap();
-        assert_eq!(le, "0.4");
+        assert_eq!(le, "4.0");
 
         let s = it.next().unwrap();
         let le = s.labels.get("le").unwrap();
-        assert_eq!(le, "0.5");
+        assert_eq!(le, "5.0");
 
         Ok(())
     }
