@@ -2,7 +2,7 @@ use anyhow::Result;
 use std::{
     fs::File,
     io::{BufReader, Read},
-    path::{Path, PathBuf},
+    path::Path,
 };
 
 pub fn read_file(path: impl AsRef<Path>) -> Result<Vec<u8>> {

@@ -1,8 +1,7 @@
-use colored_json::prelude::*;
 use serde::de::{self, Deserializer};
 use serde::{Deserialize, Serialize};
 use std::{
-    collections::{BTreeMap, BTreeSet, HashMap},
+    collections::{BTreeMap, BTreeSet},
     fmt::{Display, Formatter},
 };
 

@@ -1,151 +1,24 @@
-#![allow(dead_code, unused_imports, unused_variables, while_true)]
 mod args;
+mod diff;
 mod fs;
 mod prometheus;
+mod view;
 
-use crate::prometheus::model::PrometheusSeriesResponse;
-use anyhow::{self, Result};
+use crate::diff::diff;
+use anyhow::Result;
 use args::Args;
 use clap::Parser;
-use colored_json::prelude::*;
-use prometheus::model::Series;
-use std::collections::BTreeSet;
-use std::{collections::HashMap, path::PathBuf};
+use view::output;
 
 fn main() -> Result<()> {
     pretty_env_logger::init();
     let args = Args::parse();
 
-    let buf1 = fs::read_file(args.file1)?;
-    let buf2 = fs::read_file(args.file2)?;
+    let from_buf = fs::read_file(args.from_file)?;
+    let to_buf = fs::read_file(args.to_file)?;
 
-    let (diff1, diff2) = run(buf1, buf2)?;
-    show(diff1, diff2);
+    let result = diff(from_buf, to_buf)?;
+    println!("{}", output(result, args.output)?);
 
     Ok(())
-}
-
-fn run(buf1: Vec<u8>, buf2: Vec<u8>) -> Result<(BTreeSet<Series>, BTreeSet<Series>)> {
-    let res1: PrometheusSeriesResponse = serde_json::from_slice(&buf1)?;
-    let res2: PrometheusSeriesResponse = serde_json::from_slice(&buf2)?;
-
-    let series1 = res1.data;
-    let series2 = res2.data;
-
-    let diff1 = series1
-        .difference(&series2)
-        .cloned()
-        .collect::<BTreeSet<_>>();
-    let diff2 = series2
-        .difference(&series1)
-        .cloned()
-        .collect::<BTreeSet<_>>();
-
-    Ok((diff1, diff2))
-}
-
-fn show(diff1: BTreeSet<Series>, diff2: BTreeSet<Series>) {
-    println!("Only file1 series count:{}", diff1.len());
-    for series in diff1 {
-        println!("{}", series);
-    }
-
-    println!("Only file2 series count:{}", diff2.len());
-    for series in diff2 {
-        println!("{}", series);
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use anyhow::{Context, Result};
-
-    #[test]
-    fn test() -> Result<()> {
-        let buf1 = r#"{
-  "status": "success",
-  "data": [
-    {
-      "__name__": "prometheus_http_request_duration_seconds_bucket",
-      "handler": "/api/v1/series",
-      "instance": "localhost:9090",
-      "job": "prometheus",
-      "le": "1"
-    },
-    {
-      "__name__": "prometheus_http_request_duration_seconds_bucket",
-      "handler": "/api/v1/series",
-      "instance": "localhost:9090",
-      "job": "prometheus",
-      "le": "2"
-    },
-    {
-      "__name__": "prometheus_http_request_duration_seconds_bucket",
-      "handler": "/api/v1/series",
-      "instance": "localhost:9090",
-      "job": "prometheus",
-      "le": "3"
-    }
-  ]
-}
-            "#;
-
-        let buf2 = r#"{
-  "status": "success",
-  "data": [
-    {
-      "__name__": "prometheus_http_request_duration_seconds_bucket",
-      "handler": "/api/v1/series",
-      "instance": "localhost:9090",
-      "job": "prometheus",
-      "le": "2.0"
-    },
-    {
-      "__name__": "prometheus_http_request_duration_seconds_bucket",
-      "handler": "/api/v1/series",
-      "instance": "localhost:9090",
-      "job": "prometheus",
-      "le": "3.0"
-    },
-    {
-      "__name__": "prometheus_http_request_duration_seconds_bucket",
-      "handler": "/api/v1/series",
-      "instance": "localhost:9090",
-      "job": "prometheus",
-      "le": "4.0"
-    },
-    {
-      "__name__": "prometheus_http_request_duration_seconds_bucket",
-      "handler": "/api/v1/series",
-      "instance": "localhost:9090",
-      "job": "prometheus",
-      "le": "5.0"
-    }
-  ]
-}"#;
-
-        let buf1 = buf1.as_bytes().to_vec();
-        let buf2 = buf2.as_bytes().to_vec();
-
-        let (d1, d2) = run(buf1, buf2)?;
-        assert!(d1.len() == 1);
-        assert!(d2.len() == 2);
-
-        let mut it = d1.iter();
-        let s = it.next().unwrap();
-        let le = s.labels.get("le").unwrap();
-        assert_eq!(le, "1.0");
-
-        let mut it = d2.iter();
-        let s = it.next().unwrap();
-        let le = s.labels.get("le").unwrap();
-        assert_eq!(le, "4.0");
-
-        let s = it.next().unwrap();
-        let le = s.labels.get("le").unwrap();
-        assert_eq!(le, "5.0");
-
-        Ok(())
-    }
 }
