@@ -1,0 +1,8 @@
+debug/
+target/
+**/*.rs.bk
+.idea
+.vscode
+.zed
+issue.md
+tmp
