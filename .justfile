@@ -80,4 +80,7 @@ watch-test *options:
     cargo watch -x 'nextest run {{ options }}'
 
 prmetheus-run:
-    docker run -p 3000:3000 -it --rm prom/prometheus:v2.55.1 -h
+    docker run -p 9090:9090 -it --rm prom/prometheus:v2.55.1
+
+download-series:
+    xh http://localhost:9090/api/v1/series --form match[]='{__name__=~".+?"}'
