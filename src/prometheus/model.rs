@@ -1,9 +1,10 @@
 use serde::de::{self, Deserializer};
 use serde::{Deserialize, Serialize};
-use std::{
-    collections::{BTreeMap, BTreeSet},
-    fmt::{Display, Formatter},
-};
+use std::collections::{BTreeMap, BTreeSet};
+use std::sync::{LazyLock, RwLock};
+
+pub static DISABLE_ADJUST_BUCKET_LABEL: LazyLock<RwLock<bool>> =
+    LazyLock::new(|| RwLock::new(false));
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PrometheusSeriesResponse {
@@ -24,10 +25,15 @@ where
     D: Deserializer<'de>,
 {
     let value: BTreeMap<String, String> = Deserialize::deserialize(deserializer)?;
-    let r = value
+
+    if *DISABLE_ADJUST_BUCKET_LABEL.read().unwrap() {
+        return Ok(value);
+    }
+
+    let value = value
         .into_iter()
         .map(|(k, v)| {
-            if &k == "le" && &v != "+Inf" || &k == "quantile" {
+            if (&k == "le" && &v != "+Inf") || &k == "quantile" {
                 let v = v.parse::<f64>().map_err(de::Error::custom)?;
                 let v = format!("{:.1}", v);
 
@@ -36,20 +42,13 @@ where
             Ok((k, v))
         })
         .collect::<Result<BTreeMap<_, _>, D::Error>>()?;
-    Ok(r)
+
+    Ok(value)
 }
 
 impl std::hash::Hash for Series {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.name.hash(state);
         self.labels.hash(state);
-    }
-}
-
-impl Display for Series {
-    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
-        let value = serde_json::to_value(self).map_err(|_| std::fmt::Error)?;
-        let buf = colored_json::to_colored_json_auto(&value).map_err(|_| std::fmt::Error)?;
-        write!(f, "{}", buf)
     }
 }

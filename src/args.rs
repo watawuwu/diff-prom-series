@@ -24,9 +24,11 @@ fn help_styles() -> Styles {
 #[derive(Parser, Debug)]
 #[command(author, version, about, next_line_help = true, long_about = None, styles(help_styles()))]
 pub struct Args {
-    /// Output format
     #[arg(long, default_value_t = String::from("/api/v1/series"))]
     pub api_path: String,
+
+    #[arg(long, default_value = "false")]
+    pub disable_adjust_bucket_label: bool,
 
     /// Output format
     #[arg(short, long, default_value_t = OutputFormat::Text)]

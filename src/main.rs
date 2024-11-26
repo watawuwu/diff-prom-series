@@ -8,11 +8,18 @@ use crate::diff::diff;
 use anyhow::Result;
 use args::Args;
 use clap::Parser;
+use prometheus::model::DISABLE_ADJUST_BUCKET_LABEL;
 use view::output;
 
 fn main() -> Result<()> {
     pretty_env_logger::init();
     let args = Args::parse();
+
+    // Workaround
+    {
+        let mut opt = DISABLE_ADJUST_BUCKET_LABEL.write().unwrap();
+        *opt = args.disable_adjust_bucket_label;
+    }
 
     let from_buf = prometheus::read(
         args.from_input,
