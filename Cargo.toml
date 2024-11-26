@@ -1,12 +1,12 @@
 [package]
-name = "diff-prom-series"
+name = "prometheus-series-diff"
 version = "0.1.0"
 authors = ["Wataru Matsui <watawuwu@3bi.tech>"]
 readme = "README.md"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 description = ""
-repository = "https://github.com/watawuwu/diff-prom-series"
+repository = "https://github.com/watawuwu/prometheus-series-diff"
 keywords = [""]
 categories = ["command-line-utilities"]
 

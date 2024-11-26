@@ -1,6 +1,6 @@
-name := "diff-prom-series"
+name := "prometheus-series-diff"
 
-export RUST_LOG := "diff_prom_series=debug"
+export RUST_LOG := "prometheus_series_diff=debug"
 export RUST_BACKTRACE := "1"
 
 default:
@@ -80,7 +80,7 @@ watch-test *options:
     cargo watch -x 'nextest run {{ options }}'
 
 prmetheus-run:
-    docker run -p 9090:9090 -it --rm prom/prometheus:v2.55.1
+    docker run -p 9090:9090 -it --rm prom/prometheus
 
 download-series:
     xh http://localhost:9090/api/v1/series --form match[]='{__name__=~".+?"}'
