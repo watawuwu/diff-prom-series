@@ -20,6 +20,12 @@ You can also specify the start and end parameters individually.
 $ prometheus-series-diff --from-start 2021-01-01T00:00:00Z --from-end 2021-01-02T00:05:00Z --to-start 2021-01-01T00:00:00Z --to-end 2021-01-02T00:05:00Z http://prometheus1.example.com:9090 http://prometheus.example.com:9090
 ```
 
+This section explains that it is possible to periodically save series data and compare it to detect changes in the series data.
+
+```shell
+$ prometheus-series-diff /path/to/from.json path/to/to.json
+```
+
 ## Contributing
 
 Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.

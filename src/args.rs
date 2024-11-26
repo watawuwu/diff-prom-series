@@ -27,6 +27,9 @@ pub struct Args {
     #[arg(long, default_value_t = String::from("/api/v1/series"))]
     pub api_path: String,
 
+    /// Disable adjust bucket label
+    /// Prometheus v3.0 changed the label values of `le` and `quantile` from `u64` to `f64`.
+    /// This option disables the feature that converts them back to `u64` for comparison.
     #[arg(long, default_value = "false")]
     pub disable_adjust_bucket_label: bool,
 
@@ -34,16 +37,24 @@ pub struct Args {
     #[arg(short, long, default_value_t = OutputFormat::Text)]
     pub output: OutputFormat,
 
-    #[arg(long, default_value_t = *DEFAULT_START_DATETIME)]
+    /// Start time for the from input.
+    /// Defaults to 10 minutes ago.
+    #[arg(long, default_value_t = *DEFAULT_START_DATETIME, hide_default_value = true)]
     pub from_start: DateTime<Local>,
 
-    #[arg(long, default_value_t = *DEFAULT_END_DATETIME)]
+    /// End time for the from input.
+    /// Defaults to 5 minutes ago.
+    #[arg(long, default_value_t = *DEFAULT_END_DATETIME, hide_default_value = true)]
     pub from_end: DateTime<Local>,
 
-    #[arg(long, default_value_t = *DEFAULT_START_DATETIME)]
+    /// Start time for the to input.
+    /// Defaults to 10 minutes ago.
+    #[arg(long, default_value_t = *DEFAULT_START_DATETIME, hide_default_value = true)]
     pub to_start: DateTime<Local>,
 
-    #[arg(long, default_value_t = *DEFAULT_END_DATETIME)]
+    /// End time for the to input.
+    /// Defaults to 5 minutes ago.
+    #[arg(long, default_value_t = *DEFAULT_END_DATETIME, hide_default_value = true)]
     pub to_end: DateTime<Local>,
 
     #[arg(name = "FROM_INPUT")]
