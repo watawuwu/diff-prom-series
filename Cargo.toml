@@ -7,6 +7,7 @@ edition = "2021"
 license = "MIT OR Apache-2.0"
 description = ""
 repository = "https://github.com/watawuwu/prometheus-series-diff"
+homepage = "https://github.com/watawuwu/prometheus-series-diff"
 keywords = [""]
 categories = ["command-line-utilities"]
 
@@ -25,3 +26,8 @@ reqwest = { version = "0", features = ["json", "blocking", "rustls-tls"] }
 
 [profile.release]
 strip = true
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
