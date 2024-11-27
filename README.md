@@ -1,6 +1,6 @@
 # prometheus-series-diff
 
-This is a tool for diffing Prometheus series data. For example, if there are changes to the data due to a major update or minor version upgrade, such as Prometheus v3, you can use this to detect those changes.
+This CLI checks for differences in Prometheus series data. For example, if there are changes to the data due to a major update or minor version upgrade, such as Prometheus v3, you can use this to detect those changes.
 In addition to Prometheus, you can also use it to investigate the impact on series due to changes in exporter application and replay rules.
 
 ![Github Action](https://github.com/watawuwu/prometheus-series-diff/workflows/Test/badge.svg)
